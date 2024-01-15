@@ -1,11 +1,17 @@
 package com.example.oauth2practice.controller;
 
+import ch.qos.logback.core.net.SyslogOutputStream;
+import com.example.oauth2practice.auth.PrincipalDetails;
 import com.example.oauth2practice.user.User;
 import com.example.oauth2practice.user.repo.UserRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +29,8 @@ public class IndexController {
         return "index";
     }
     @GetMapping("/user")
-    public String user(){
+    public String user(@AuthenticationPrincipal PrincipalDetails principalDetails){
+        //일반로그인/oauth로그인 한 타입 PrincipalDetails가 전부 상속받을 수 있게 만들어야 한다
         return "user";
     }
     @GetMapping("/admin")
@@ -58,5 +65,28 @@ public class IndexController {
     @GetMapping("/info")
     public @ResponseBody String info(){
         return "개인정보";
+    }
+
+    @GetMapping("/test/login")
+    public String testLogin(Authentication authentication,
+                            @AuthenticationPrincipal PrincipalDetails userDetails){ //DI로 PrincipalDetails를 받고, PrincipalDetails에는 User가 들어있다
+        //PrincipatDetails이 UserDetails를 상속받고 있기 때문에 @AuthenticationPrincipal로 받을 수 있다
+        System.out.println("/test/login ===================");
+        PrincipalDetails principalDetails = (PrincipalDetails) authentication.getPrincipal();
+        //User정보를 받아오는 2가지 방법 1. Authentication 2. @AuthenticationPrincipal
+        System.out.println("authentication : " + principalDetails.getUser()); //1번 : Authentication을 이용해서 User정보를 가져올 수 있다
+
+        System.out.println("userDetails : "+userDetails.getUser()); //2번 : @AuthenticationPrincipal을 이용해서 User정보를 가져올 수 있다t
+
+        return "세션 정보 확인하기";
+    }
+// Oauth login은 PrincipalDetails/UserDetails 캐스팅 받을 수 없다
+    @GetMapping("/test/oauth/login")
+    public String testOauthLogin(Authentication authentication){ //DI로 PrincipalDetails를 받고, PrincipalDetails에는 User가 들어있다
+        System.out.println("/test/oauth/login ===================");
+        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        System.out.println("authentication : " + oAuth2User.getAttributes()); //user의 정보 Map<String,Object>로 받아온다
+
+        return "Oauth Session Check";
     }
 }

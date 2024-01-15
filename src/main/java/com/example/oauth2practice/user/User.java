@@ -17,7 +17,6 @@ import java.sql.Timestamp;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +25,19 @@ public class User {
     private String password;
     private String email;
     private String role;
+    private String provider;    //google
+    private String providerId;  //google의 id 이 두개로 oauth2로 로그인한 유저인지 판단
     private Timestamp loginDate;
     @CreationTimestamp
     private Timestamp createDate;
+
+    @Builder
+    public User(String username, String password, String email, String role, String provider, String providerId) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.provider = provider;
+        this.providerId = providerId;
+    }
 }
