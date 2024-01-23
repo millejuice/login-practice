@@ -12,6 +12,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 @Data
@@ -30,6 +33,14 @@ public class User {
     private Timestamp loginDate;
     @CreationTimestamp
     private Timestamp createDate;
+
+    //Role이 두개 이상일 때 Role List로 받아서 처리
+    public List<String> getRoleList(){
+        if(!this.role.isEmpty()){
+            return Arrays.asList(this.role.split(",")); //admin 유저일경우 ROLE_USER,ROLE_ADMIN List로 role 들어와서 split
+        }
+        return new ArrayList<>(); //null이면 빈 List
+    }
 
     @Builder
     public User(String username, String password, String email, String role, String provider, String providerId) {

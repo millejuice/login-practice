@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
     //구글에서 받은 유저 데이타 후처리하는 함수
 
-
     @Autowired
     private UserRepo userRepo;
     @Override

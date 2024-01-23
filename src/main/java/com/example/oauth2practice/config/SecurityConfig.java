@@ -18,6 +18,9 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableMethodSecurity(securedEnabled = true) //controller위에 secured 어노테이션 사용 가능하게 만듦
 public class SecurityConfig{
     @Autowired
+    private CorsConfig corsConfig;
+
+    @Autowired
     private PrincipalOauth2UserService principalOauth2UserService;
     //Bean으로 등록해준다 ? 해당 메서드 리턴되는 오브젝트 IOC로 등록
     @Bean
@@ -31,6 +34,7 @@ public class SecurityConfig{
                 csrf(AbstractHttpConfigurer::disable);
 //                .cors(AbstractHttpConfigurer::disable);
 //                .sessionManagement(s->s.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+        http.addFilter(corsConfig.corsFilter()); // server가 CORS 정책에서 해제됨
         http.
                 authorizeHttpRequests(au->
                         au.requestMatchers("/user").authenticated() //user로 시작하는 모든 요청은 인증이 되어야함
